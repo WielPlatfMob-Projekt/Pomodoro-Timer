@@ -34,8 +34,6 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
   int _minutes = 25;
   int _seconds = 0;
   int cycles = 4;
-  int actualCycle = 1;
-  bool _isBreak = false;
   bool _isActive = false;
   late Timer _timer;
   bool isCountingDown = false;
@@ -44,8 +42,6 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
   int _workTime = 25;
   int _shortBreakTime = 5;
   int _longBreakTime = 15;
-
-
 
   static const double padding = 30;
   static const double icon_size = 50;
@@ -152,6 +148,12 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
     PomodoroState.longBreak,
   ];
 
+  late Map<PomodoroState, int> sessionTime = {
+    PomodoroState.work: _workTime,
+    PomodoroState.shortBreak: _shortBreakTime,
+    PomodoroState.longBreak: _longBreakTime,
+  };
+
   int cycleIndex = 0;
 
   PomodoroState getNextState() {
@@ -174,17 +176,9 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
       setState(() {
         if (_seconds == 0) {
           if (_minutes == 0) {
-            if (_isBreak) {
-              _minutes = 25;
-              actualCycle += 1;
-              currentState = getNextState();
-
-              setState(() {});
-            } else {
-              _minutes = 5;
-              currentState = getNextState();
-            }
-            _isBreak = !_isBreak;
+            currentState = getNextState();
+            _minutes = sessionTime[currentState]!;
+            setState(() {});
           } else {
             _minutes -= 1;
           }
@@ -210,8 +204,6 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
 
       _minutes = 25;
       _seconds = 0;
-      _isBreak = false;
-      actualCycle = 1;
       currentState = PomodoroState.work;
       resetState();
 
@@ -223,18 +215,9 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
     _timer.cancel();
 
     setState(() {
-      _seconds = 0;
-
-      if (_isBreak == true) {
-        _isBreak = false;
-        _minutes = 25;
-      } else {
-        _isBreak = true;
-        _minutes = 5;
-      }
-
-      actualCycle += 1;
       currentState = getNextState();
+      _seconds = 0;
+      _minutes = sessionTime[currentState]!;
     });
     _startTimer();
   }
@@ -266,12 +249,6 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
       PomodoroState.work: 'Work Time',
       PomodoroState.shortBreak: 'Short Break',
       PomodoroState.longBreak: 'Long Break',
-    };
-
-    final Map<PomodoroState, int> sessionTime = {
-      PomodoroState.work: _workTime,
-      PomodoroState.shortBreak: _shortBreakTime,
-      PomodoroState.longBreak: _longBreakTime,
     };
 
     ButtonStyle transparentButtonStyle = ElevatedButton.styleFrom(
@@ -327,7 +304,7 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
                         color: Colors.white,
                         width: 2.0,
                       ),
-                      color: index < actualCycle
+                      color: index < cycleIndex + 1
                           ? Colors.white
                           : Colors.transparent,
                     ),
@@ -365,7 +342,7 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
                       _isActive ? svgStop[currentState] : svgPlay[currentState],
                 ),
                 ElevatedButton(
-                  onPressed: (actualCycle == cycles) ? null : _skipCyclePart,
+                  onPressed: _skipCyclePart,
                   style: transparentButtonStyle.copyWith(
                     overlayColor: MaterialStateProperty.resolveWith<Color>(
                       (Set<MaterialState> states) {
