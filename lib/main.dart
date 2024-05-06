@@ -15,7 +15,11 @@ class PomodoroApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Pomodoro',
-      theme: ThemeData(),
+      theme: ThemeData(
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        hoverColor: Colors.transparent,
+      ),
       home: PomodoroTimer(),
     );
   }
@@ -41,24 +45,55 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
   int _shortBreakTime = 5;
   int _longBreakTime = 15;
 
+
+
+  static const double padding = 30;
+  static const double icon_size = 50;
+
+  static const Color workColor = Color(0xFFCD5334);
+  static const Color sbreakColor = Color(0xFF1D7235);
+  static const Color lbreakColor = Color(0xFF227C9D);
+
   //svg
   final Widget svgMenu = SvgPicture.asset('assets/svg/menu.svg',
       //colorFilter: const ColorFilter.mode(Colors.red, BlendMode.srcIn),
       semanticsLabel: 'menu button');
 
-  final Widget svgPlayR = SvgPicture.asset('assets/svg/play.svg',
-      width: 100,
-      height: 100,
-      //colorFilter: const ColorFilter.mode(Colors.red, BlendMode.srcATop),
-      semanticsLabel: 'play button');
+  final Widget svgPlayR = Container(
+      padding: const EdgeInsets.all(padding),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+      ),
+      child: SvgPicture.asset('assets/svg/play.svg',
+          width: icon_size,
+          height: icon_size,
+          colorFilter: const ColorFilter.mode(workColor, BlendMode.srcATop),
+          semanticsLabel: 'play button'));
 
-  final Widget svgPlayG = SvgPicture.asset('assets/svg/play.svg',
-      //colorFilter: const ColorFilter.mode(Colors.red, BlendMode.srcIn),
-      semanticsLabel: 'play button');
+  final Widget svgPlayG = Container(
+      padding: const EdgeInsets.all(padding),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+      ),
+      child: SvgPicture.asset('assets/svg/play.svg',
+          width: icon_size,
+          height: icon_size,
+          colorFilter: const ColorFilter.mode(sbreakColor, BlendMode.srcIn),
+          semanticsLabel: 'play button'));
 
-  final Widget svgPlayB = SvgPicture.asset('assets/svg/play.svg',
-      //colorFilter: const ColorFilter.mode(Color(0xFF227C9D), BlendMode.srcIn),
-      semanticsLabel: 'play button');
+  final Widget svgPlayB = Container(
+      padding: const EdgeInsets.all(padding),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+      ),
+      child: SvgPicture.asset('assets/svg/play.svg',
+          width: icon_size,
+          height: icon_size,
+          colorFilter: const ColorFilter.mode(lbreakColor, BlendMode.srcIn),
+          semanticsLabel: 'play button'));
 
   final Widget svgQMark = SvgPicture.asset('assets/svg/question_mark.svg',
       //colorFilter: const ColorFilter.mode(Colors.red, BlendMode.srcIn),
@@ -72,17 +107,41 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
       //colorFilter: const ColorFilter.mode(Colors.red, BlendMode.srcIn),
       semanticsLabel: 'skip');
 
-  final Widget svgStopR = SvgPicture.asset('assets/svg/stop.svg',
-      //colorFilter: const ColorFilter.mode(Color(0xFFCD5334), BlendMode.srcIn),
-      semanticsLabel: 'stop red');
+  final Widget svgStopR = Container(
+      padding: const EdgeInsets.all(padding),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+      ),
+      child: SvgPicture.asset('assets/svg/stop.svg',
+          width: icon_size,
+          height: icon_size,
+          colorFilter: const ColorFilter.mode(workColor, BlendMode.srcIn),
+          semanticsLabel: 'stop red'));
 
-  final Widget svgStopG = SvgPicture.asset('assets/svg/stop.svg',
-      //colorFilter: const ColorFilter.mode(Colors.red, BlendMode.srcIn),
-      semanticsLabel: 'stop green');
+  final Widget svgStopG = Container(
+      padding: const EdgeInsets.all(padding),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+      ),
+      child: SvgPicture.asset('assets/svg/stop.svg',
+          width: icon_size,
+          height: icon_size,
+          colorFilter: const ColorFilter.mode(sbreakColor, BlendMode.srcIn),
+          semanticsLabel: 'stop green'));
 
-  final Widget svgStopB = SvgPicture.asset('assets/svg/stop.svg',
-      colorFilter: const ColorFilter.mode(Color(0xFF227C9D), BlendMode.srcIn),
-      semanticsLabel: 'stop blue');
+  final Widget svgStopB = Container(
+      padding: const EdgeInsets.all(padding),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+      ),
+      child: SvgPicture.asset('assets/svg/stop.svg',
+          width: icon_size,
+          height: icon_size,
+          colorFilter: const ColorFilter.mode(lbreakColor, BlendMode.srcIn),
+          semanticsLabel: 'stop blue'));
 
   //
 
@@ -101,9 +160,8 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
   }
 
   resetState() {
-      cycleIndex = 0;
-    }
-
+    cycleIndex = 0;
+  }
 
   //
 
@@ -140,7 +198,9 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
 
   void _stopTimer() {
     _timer.cancel();
-    setState(() {_isActive = false;});
+    setState(() {
+      _isActive = false;
+    });
   }
 
   void _resetTimer() {
@@ -165,16 +225,17 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
     setState(() {
       _seconds = 0;
 
-    if (_isBreak == true) {
-      _isBreak = false;
-      _minutes = 25;
-    } else {
-      _isBreak = true;
-      _minutes = 5;
-    }
+      if (_isBreak == true) {
+        _isBreak = false;
+        _minutes = 25;
+      } else {
+        _isBreak = true;
+        _minutes = 5;
+      }
 
-    actualCycle += 1;
-    currentState = getNextState();});
+      actualCycle += 1;
+      currentState = getNextState();
+    });
     _startTimer();
   }
 
@@ -184,27 +245,33 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
     String secondsStr = _seconds < 10 ? '0$_seconds' : '$_seconds';
 
     final Map<PomodoroState, Color> stateColors = {
-      PomodoroState.work: Colors.red,
-      PomodoroState.shortBreak: Colors.green,
-      PomodoroState.longBreak: Colors.blue,
+      PomodoroState.work: workColor,
+      PomodoroState.shortBreak: sbreakColor,
+      PomodoroState.longBreak: lbreakColor,
     };
 
     final Map<PomodoroState, Widget> svgPlay = {
       PomodoroState.work: svgPlayR,
-      PomodoroState.shortBreak: svgPlayB,
-      PomodoroState.longBreak: svgPlayG
+      PomodoroState.shortBreak: svgPlayG,
+      PomodoroState.longBreak: svgPlayB
     };
 
     final Map<PomodoroState, Widget> svgStop = {
       PomodoroState.work: svgStopR,
-      PomodoroState.shortBreak: svgStopB,
-      PomodoroState.longBreak: svgStopG,
+      PomodoroState.shortBreak: svgStopG,
+      PomodoroState.longBreak: svgStopB,
     };
 
-    final Map<PomodoroState, String> SessionText = {
+    final Map<PomodoroState, String> sessionText = {
       PomodoroState.work: 'Work Time',
       PomodoroState.shortBreak: 'Short Break',
       PomodoroState.longBreak: 'Long Break',
+    };
+
+    final Map<PomodoroState, int> sessionTime = {
+      PomodoroState.work: _workTime,
+      PomodoroState.shortBreak: _shortBreakTime,
+      PomodoroState.longBreak: _longBreakTime,
     };
 
     ButtonStyle transparentButtonStyle = ElevatedButton.styleFrom(
@@ -218,36 +285,95 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              SessionText[currentState]!,
-              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+            Stack(
+              alignment: Alignment.center,
+              children: <Widget>[
+                Container(
+                  width: 250.0, // adjust the size as needed
+                  height: 250.0, // adjust the size as needed
+                  child: CircularProgressIndicator(
+                    value: ((_minutes * 60 + _seconds) /
+                        (sessionTime[currentState]! *
+                            60)), // replace with your progress value
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    backgroundColor: Colors.white.withOpacity(0.2),
+                    strokeWidth: 5.0,
+                  ),
+                ),
+                Text(
+                  '$minutesStr:$secondsStr' '',
+                  style: TextStyle(fontSize: 82.0, color: Colors.white),
+                ),
+              ],
             ),
             SizedBox(height: 20.0),
             Text(
-              "cycle: $actualCycle",
-              style: TextStyle(fontSize: 25.0),
-            ),
-            Text(
-              '$minutesStr:$secondsStr',
-              style: TextStyle(fontSize: 50.0),
+              sessionText[currentState]!,
+              style: TextStyle(fontSize: 32.0, color: Colors.white),
             ),
             SizedBox(height: 20.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 100.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: List<Widget>.generate(
+                  4,
+                  (index) => Container(
+                    width: 20.0,
+                    height: 20.0,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 2.0,
+                      ),
+                      color: index < actualCycle
+                          ? Colors.white
+                          : Colors.transparent,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 150.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 ElevatedButton(
                   onPressed: _resetTimer,
-                  style: transparentButtonStyle,
+                  style: transparentButtonStyle.copyWith(
+                    overlayColor: MaterialStateProperty.resolveWith<Color>(
+                      (Set<MaterialState> states) {
+                        return Colors
+                            .transparent; // Use transparent color for all states
+                      },
+                    ),
+                  ),
                   child: svgReset,
                 ),
                 ElevatedButton(
                   onPressed: _isActive ? _stopTimer : _startTimer,
-                  style: transparentButtonStyle,
-                  child: _isActive ? svgStop[currentState] : svgPlay[currentState],
+                  style: transparentButtonStyle.copyWith(
+                    overlayColor: MaterialStateProperty.resolveWith<Color>(
+                      (Set<MaterialState> states) {
+                        return Colors
+                            .transparent; // Use transparent color for all states
+                      },
+                    ),
+                  ),
+                  child:
+                      _isActive ? svgStop[currentState] : svgPlay[currentState],
                 ),
                 ElevatedButton(
                   onPressed: (actualCycle == cycles) ? null : _skipCyclePart,
-                  style: transparentButtonStyle,
+                  style: transparentButtonStyle.copyWith(
+                    overlayColor: MaterialStateProperty.resolveWith<Color>(
+                      (Set<MaterialState> states) {
+                        return Colors
+                            .transparent; // Use transparent color for all states
+                      },
+                    ),
+                  ),
                   child: svgSkip,
                 ),
               ],
