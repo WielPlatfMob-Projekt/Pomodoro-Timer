@@ -45,6 +45,30 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
   int _shortBreakTime = 5;
   int _longBreakTime = 15;
 
+  void _updateWorkTime(int newTime) {
+    print('Updating work time to $newTime');
+    setState(() {
+      _workTime = newTime;
+      sessionTime[PomodoroState.work] = newTime;
+    });
+  }
+
+  void _updateShortBreakTime(int newTime) {
+    print('Updating short break time to $newTime');
+    setState(() {
+      _shortBreakTime = newTime;
+      sessionTime[PomodoroState.shortBreak] = newTime;
+    });
+  }
+
+  void _updateLongBreakTime(int newTime) {
+    print('Updating long break time to $newTime');
+    setState(() {
+      _longBreakTime = newTime;
+      sessionTime[PomodoroState.longBreak] = newTime;
+    });
+  }
+
   static const double padding = 30;
   static const double icon_size = 50;
 
@@ -178,6 +202,7 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
       setState(() {
         if (_seconds == 0) {
           if (_minutes == 0) {
+            _seconds = 0;
             currentState = getNextState();
             _minutes = sessionTime[currentState]!;
             setState(() {});
@@ -204,9 +229,9 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
       _isActive = false;
       _timer.cancel();
 
-      _minutes = 25;
       _seconds = 0;
       currentState = PomodoroState.work;
+      _minutes = sessionTime[currentState]!;
       resetState();
 
       _timer.cancel();
@@ -371,8 +396,16 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
             icon: svgMenu,
             onPressed: () {
               Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => OptionScreen()),
+                context,
+                MaterialPageRoute(
+                    builder: (context) => OptionScreen(
+                          updateWorkTime: _updateWorkTime,
+                          updateShortBreakTime: _updateShortBreakTime,
+                          updateLongBreakTime: _updateLongBreakTime,
+                          workTime: _workTime,
+                          shortBreakTime: _shortBreakTime,
+                          longBreakTime: _longBreakTime,
+                        )),
               );
               setState(() {});
             },
@@ -381,12 +414,12 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
             IconButton(
               icon: svgQMark,
               onPressed: () {
-              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => HelpScreen()),
-              );
-              setState(() {});
-            },
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => HelpScreen()),
+                );
+                setState(() {});
+              },
             ),
           ],
           backgroundColor: Colors.transparent,
