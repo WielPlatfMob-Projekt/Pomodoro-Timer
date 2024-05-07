@@ -206,6 +206,7 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
             currentState = getNextState();
             _minutes = sessionTime[currentState]!;
             setState(() {});
+            return;
           } else {
             _minutes -= 1;
           }
@@ -405,6 +406,7 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
                           workTime: _workTime,
                           shortBreakTime: _shortBreakTime,
                           longBreakTime: _longBreakTime,
+                          color: stateColors[currentState]!,
                         )),
               );
               setState(() {});
@@ -416,7 +418,7 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => HelpScreen()),
+                  MaterialPageRoute(builder: (context) => HelpScreen(color: stateColors[currentState]!)),
                 );
                 setState(() {});
               },
