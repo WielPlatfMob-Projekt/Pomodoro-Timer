@@ -16,6 +16,7 @@ class PomodoroApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Pomodoro',
       theme: ThemeData(
         splashColor: Colors.transparent,
@@ -29,42 +30,42 @@ class PomodoroApp extends StatelessWidget {
 
 class PomodoroTimer extends StatefulWidget {
   @override
-  _PomodoroTimerState createState() => _PomodoroTimerState();
+  PomodoroTimerState createState() => PomodoroTimerState();
 }
 
-class _PomodoroTimerState extends State<PomodoroTimer> {
-  int _minutes = 25;
-  int _seconds = 0;
+class PomodoroTimerState extends State<PomodoroTimer> {
+  int minutes = 25;
+  int seconds = 0;
   int cycles = 4;
-  bool _isActive = false;
-  late Timer _timer;
+  bool isActive = false;
+  late Timer timer;
   bool isCountingDown = false;
 
   PomodoroState currentState = PomodoroState.work;
-  int _workTime = 25;
-  int _shortBreakTime = 5;
-  int _longBreakTime = 15;
+  int workTime = 25;
+  int shortBreakTime = 5;
+  int longBreakTime = 15;
 
-  void _updateWorkTime(int newTime) {
+  void updateWorkTime(int newTime) {
     print('Updating work time to $newTime');
     setState(() {
-      _workTime = newTime;
+      workTime = newTime;
       sessionTime[PomodoroState.work] = newTime;
     });
   }
 
-  void _updateShortBreakTime(int newTime) {
+  void updateShortBreakTime(int newTime) {
     print('Updating short break time to $newTime');
     setState(() {
-      _shortBreakTime = newTime;
+      shortBreakTime = newTime;
       sessionTime[PomodoroState.shortBreak] = newTime;
     });
   }
 
-  void _updateLongBreakTime(int newTime) {
+  void updateLongBreakTime(int newTime) {
     print('Updating long break time to $newTime');
     setState(() {
-      _longBreakTime = newTime;
+      longBreakTime = newTime;
       sessionTime[PomodoroState.longBreak] = newTime;
     });
   }
@@ -175,9 +176,9 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
   ];
 
   late Map<PomodoroState, int> sessionTime = {
-    PomodoroState.work: _workTime,
-    PomodoroState.shortBreak: _shortBreakTime,
-    PomodoroState.longBreak: _longBreakTime,
+    PomodoroState.work: workTime,
+    PomodoroState.shortBreak: shortBreakTime,
+    PomodoroState.longBreak: longBreakTime,
   };
 
   int cycleIndex = 0;
@@ -193,67 +194,67 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
 
   //
 
-  void _startTimer() {
+  void startTimer() {
     setState(() {
-      _isActive = true;
+      isActive = true;
     });
     isCountingDown = true;
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
-        if (_seconds == 0) {
-          if (_minutes == 0) {
-            _seconds = 0;
+        if (seconds == 0) {
+          if (minutes == 0) {
+            seconds = 0;
             currentState = getNextState();
-            _minutes = sessionTime[currentState]!;
+            minutes = sessionTime[currentState]!;
             setState(() {});
             return;
           } else {
-            _minutes -= 1;
+            minutes -= 1;
           }
-          _seconds = 59;
+          seconds = 59;
         } else {
-          _seconds -= 1;
+          seconds -= 1;
         }
       });
     });
   }
 
-  void _stopTimer() {
-    _timer.cancel();
+  void stopTimer() {
+    timer.cancel();
     setState(() {
-      _isActive = false;
+      isActive = false;
     });
   }
 
-  void _resetTimer() {
+  void resetTimer() {
     setState(() {
-      _isActive = false;
-      _timer.cancel();
+      isActive = false;
+      timer.cancel();
 
-      _seconds = 0;
+      seconds = 0;
       currentState = PomodoroState.work;
-      _minutes = sessionTime[currentState]!;
+      minutes = sessionTime[currentState]!;
       resetState();
 
-      _timer.cancel();
+      timer.cancel();
     });
   }
 
-  void _skipCyclePart() {
-    _timer.cancel();
+  void skipCyclePart() {
+    timer.cancel();
 
     setState(() {
       currentState = getNextState();
-      _seconds = 0;
-      _minutes = sessionTime[currentState]!;
+      seconds = 0;
+      minutes = sessionTime[currentState]!;
     });
-    _startTimer();
+    startTimer();
   }
 
   @override
   Widget build(BuildContext context) {
-    String minutesStr = _minutes < 10 ? '0$_minutes' : '$_minutes';
-    String secondsStr = _seconds < 10 ? '0$_seconds' : '$_seconds';
+    String minutesStr = minutes < 10 ? '0$minutes' : '$minutes';
+    String secondsStr = seconds < 10 ? '0$seconds' : '$seconds';
 
     final Map<PomodoroState, Color> stateColors = {
       PomodoroState.work: workColor,
@@ -298,7 +299,7 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
                     width: 250.0, // adjust the size as needed
                     height: 250.0, // adjust the size as needed
                     child: CircularProgressIndicator(
-                      value: ((_minutes * 60 + _seconds) /
+                      value: ((minutes * 60 + seconds) /
                           (sessionTime[currentState]! * 60)),
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       backgroundColor: Colors.white.withOpacity(0.2),
@@ -345,7 +346,7 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   ElevatedButton(
-                    onPressed: _resetTimer,
+                    onPressed: resetTimer,
                     style: transparentButtonStyle.copyWith(
                       overlayColor: MaterialStateProperty.resolveWith<Color>(
                         (Set<MaterialState> states) {
@@ -357,7 +358,7 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
                     child: svgReset,
                   ),
                   ElevatedButton(
-                    onPressed: _isActive ? _stopTimer : _startTimer,
+                    onPressed: isActive ? stopTimer : startTimer,
                     style: transparentButtonStyle.copyWith(
                       overlayColor: MaterialStateProperty.resolveWith<Color>(
                         (Set<MaterialState> states) {
@@ -366,12 +367,12 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
                         },
                       ),
                     ),
-                    child: _isActive
+                    child: isActive
                         ? svgStop[currentState]
                         : svgPlay[currentState],
                   ),
                   ElevatedButton(
-                    onPressed: _skipCyclePart,
+                    onPressed: skipCyclePart,
                     style: transparentButtonStyle.copyWith(
                       overlayColor: MaterialStateProperty.resolveWith<Color>(
                         (Set<MaterialState> states) {
@@ -400,12 +401,12 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => OptionScreen(
-                          updateWorkTime: _updateWorkTime,
-                          updateShortBreakTime: _updateShortBreakTime,
-                          updateLongBreakTime: _updateLongBreakTime,
-                          workTime: _workTime,
-                          shortBreakTime: _shortBreakTime,
-                          longBreakTime: _longBreakTime,
+                          updateWorkTime: updateWorkTime,
+                          updateShortBreakTime: updateShortBreakTime,
+                          updateLongBreakTime: updateLongBreakTime,
+                          workTime: workTime,
+                          shortBreakTime: shortBreakTime,
+                          longBreakTime: longBreakTime,
                           color: stateColors[currentState]!,
                         )),
               );
@@ -418,7 +419,9 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => HelpScreen(color: stateColors[currentState]!)),
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          HelpScreen(color: stateColors[currentState]!)),
                 );
                 setState(() {});
               },
