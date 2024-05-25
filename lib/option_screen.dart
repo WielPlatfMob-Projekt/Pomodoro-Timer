@@ -49,7 +49,6 @@ class _OptionScreenState extends State<OptionScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
@@ -58,6 +57,7 @@ class _OptionScreenState extends State<OptionScreen> {
                     '-',
                     style: TextStyle(
                       color: Colors.white,
+                      fontSize: 30,
                     ),
                   ),
                   onPressed: () {
@@ -71,6 +71,7 @@ class _OptionScreenState extends State<OptionScreen> {
                   'Work Time: ${widget.workTime.toString()}',
                   style: TextStyle(
                     color: Colors.white,
+                    fontSize: 24,
                   ),
                 ),
                 TextButton(
@@ -78,6 +79,7 @@ class _OptionScreenState extends State<OptionScreen> {
                     '+',
                     style: TextStyle(
                       color: Colors.white,
+                      fontSize: 28,
                     ),
                   ),
                   onPressed: () {
@@ -96,6 +98,7 @@ class _OptionScreenState extends State<OptionScreen> {
                     '-',
                     style: TextStyle(
                       color: Colors.white,
+                      fontSize: 30,
                     ),
                   ),
                   onPressed: () {
@@ -110,6 +113,7 @@ class _OptionScreenState extends State<OptionScreen> {
                   'Short Break Time: ${widget.shortBreakTime.toString()}',
                   style: TextStyle(
                     color: Colors.white,
+                    fontSize: 24,
                   ),
                 ),
                 TextButton(
@@ -117,6 +121,7 @@ class _OptionScreenState extends State<OptionScreen> {
                     '+',
                     style: TextStyle(
                       color: Colors.white,
+                      fontSize: 28,
                     ),
                   ),
                   onPressed: () {
@@ -135,6 +140,7 @@ class _OptionScreenState extends State<OptionScreen> {
                     '-',
                     style: TextStyle(
                       color: Colors.white,
+                      fontSize: 30,
                     ),
                   ),
                   onPressed: () {
@@ -149,6 +155,7 @@ class _OptionScreenState extends State<OptionScreen> {
                   'Long Break Time: ${widget.longBreakTime.toString()}',
                   style: TextStyle(
                     color: Colors.white,
+                    fontSize: 24,
                   ),
                 ),
                 TextButton(
@@ -156,6 +163,7 @@ class _OptionScreenState extends State<OptionScreen> {
                     '+',
                     style: TextStyle(
                       color: Colors.white,
+                      fontSize: 28,
                     ),
                   ),
                   onPressed: () {
