@@ -17,6 +17,7 @@ class PomodoroApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Pomodoro',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
@@ -32,7 +33,8 @@ class PomodoroTimer extends StatefulWidget {
   _PomodoroTimerState createState() => _PomodoroTimerState();
 }
 
-class _PomodoroTimerState extends State<PomodoroTimer> {
+class _PomodoroTimerState extends State<PomodoroTimer>
+    with TickerProviderStateMixin {
   int _minutes = 25;
   int _seconds = 0;
   int cycles = 4;
@@ -285,106 +287,147 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
     );
 
     return Stack(children: <Widget>[
-      Scaffold(
-        backgroundColor: stateColors[currentState],
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Stack(
-                alignment: Alignment.center,
-                children: <Widget>[
-                  Container(
-                    width: 250.0, // adjust the size as needed
-                    height: 250.0, // adjust the size as needed
-                    child: CircularProgressIndicator(
-                      value: ((_minutes * 60 + _seconds) /
-                          (sessionTime[currentState]! * 60)),
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      backgroundColor: Colors.white.withOpacity(0.2),
-                      strokeWidth: 5.0,
-                    ),
-                  ),
-                  Text(
-                    '$minutesStr:$secondsStr' '',
-                    style: TextStyle(fontSize: 82.0, color: Colors.white),
-                  ),
-                ],
-              ),
-              SizedBox(height: 20.0),
-              Text(
-                sessionText[currentState]!,
-                style: TextStyle(fontSize: 32.0, color: Colors.white),
-              ),
-              SizedBox(height: 20.0),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 100.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: List<Widget>.generate(
-                    4,
-                    (index) => Container(
-                      width: 20.0,
-                      height: 20.0,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 2.0,
+      AnimatedContainer(
+        duration: Duration(milliseconds: 300),
+        color: stateColors[currentState],
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Stack(
+                  alignment: Alignment.center,
+                  children: <Widget>[
+                    Container(
+                      width: 250.0,
+                      height: 250.0,
+                      child: TweenAnimationBuilder<double>(
+                        tween: Tween<double>(
+                          begin: 1.0,
+                          end: ((_minutes * 60 + _seconds) /
+                              (sessionTime[currentState]! * 60)),
                         ),
-                        color: index < cycleIndex + 1
-                            ? Colors.white
-                            : Colors.transparent,
+                        duration: Duration(seconds: 1),
+                        builder: (context, value, child) {
+                          return CircularProgressIndicator(
+                            value: value,
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
+                            backgroundColor: Colors.white.withOpacity(0.2),
+                            strokeWidth: 5.0,
+                          );
+                        },
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children:
+                          '$minutesStr:$secondsStr'.split('').map((digit) {
+                        return AnimatedSwitcher(
+                          duration: Duration(milliseconds: 200),
+                          transitionBuilder:
+                              (Widget child, Animation<double> animation) {
+                            return ScaleTransition(
+                                scale: animation, child: child);
+                          },
+                          child: Text(
+                            digit,
+                            key: ValueKey<String>(digit),
+                            style: TextStyle(
+                              fontSize: 82.0,
+                              color: Colors.white,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20.0),
+                Text(
+                  sessionText[currentState]!,
+                  style: TextStyle(
+                    fontSize: 32.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                SizedBox(height: 20.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 100.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: List<Widget>.generate(
+                      4,
+                      (index) => Container(
+                        width: 20.0,
+                        height: 20.0,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 2.0,
+                          ),
+                          color: index < cycleIndex + 1
+                              ? Colors.white
+                              : Colors.transparent,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              SizedBox(height: 150.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  ElevatedButton(
-                    onPressed: _resetTimer,
-                    style: transparentButtonStyle.copyWith(
-                      overlayColor: MaterialStateProperty.resolveWith<Color>(
-                        (Set<MaterialState> states) {
-                          return Colors
-                              .transparent; // Use transparent color for all states
+                SizedBox(height: 150.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    ElevatedButton(
+                      onPressed: _resetTimer,
+                      style: transparentButtonStyle.copyWith(
+                        overlayColor: MaterialStateProperty.resolveWith<Color>(
+                          (Set<MaterialState> states) {
+                            return Colors.transparent;
+                          },
+                        ),
+                      ),
+                      child: svgReset,
+                    ),
+                    ElevatedButton(
+                      onPressed: _isActive ? _stopTimer : _startTimer,
+                      style: transparentButtonStyle.copyWith(
+                        overlayColor: MaterialStateProperty.resolveWith<Color>(
+                          (Set<MaterialState> states) {
+                            return Colors.transparent;
+                          },
+                        ),
+                      ),
+                      child: AnimatedSwitcher(
+                        duration: Duration(milliseconds: 300),
+                        transitionBuilder:
+                            (Widget child, Animation<double> animation) {
+                          return FadeTransition(
+                              opacity: animation, child: child);
                         },
+                        child: _isActive
+                            ? svgStop[currentState]
+                            : svgPlay[currentState],
                       ),
                     ),
-                    child: svgReset,
-                  ),
-                  ElevatedButton(
-                    onPressed: _isActive ? _stopTimer : _startTimer,
-                    style: transparentButtonStyle.copyWith(
-                      overlayColor: MaterialStateProperty.resolveWith<Color>(
-                        (Set<MaterialState> states) {
-                          return Colors
-                              .transparent; // Use transparent color for all states
-                        },
+                    ElevatedButton(
+                      onPressed: _skipCyclePart,
+                      style: transparentButtonStyle.copyWith(
+                        overlayColor: MaterialStateProperty.resolveWith<Color>(
+                          (Set<MaterialState> states) {
+                            return Colors.transparent;
+                          },
+                        ),
                       ),
+                      child: svgSkip,
                     ),
-                    child: _isActive
-                        ? svgStop[currentState]
-                        : svgPlay[currentState],
-                  ),
-                  ElevatedButton(
-                    onPressed: _skipCyclePart,
-                    style: transparentButtonStyle.copyWith(
-                      overlayColor: MaterialStateProperty.resolveWith<Color>(
-                        (Set<MaterialState> states) {
-                          return Colors
-                              .transparent; // Use transparent color for all states
-                        },
-                      ),
-                    ),
-                    child: svgSkip,
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -418,7 +461,9 @@ class _PomodoroTimerState extends State<PomodoroTimer> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => HelpScreen(color: stateColors[currentState]!)),
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          HelpScreen(color: stateColors[currentState]!)),
                 );
                 setState(() {});
               },
